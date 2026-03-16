@@ -5,83 +5,743 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="theme-color" content="#0f172a" />
-  <title>Napi mintaellenőrzés V5</title>
+  <title>Napi mintaellenőrzés V5 javított</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
-    :root{--bg:#eef2f7;--surface:#ffffff;--text:#172033;--muted:#667085;--line:#d6dbe3;--shadow:0 10px 30px rgba(15,23,42,.08);--radius:20px;--blue:#2b6ef3;--blue-soft:#e8f0ff;--gray:#7b8794;--gray-soft:#f1f3f5;--amber:#f59e0b;--amber-soft:#fff4db;--ink:#0f172a}
-    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;padding:0;background:linear-gradient(180deg,#f7f9fc 0%, #edf2f7 100%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}body{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
-    .app{max-width:1240px;margin:0 auto;padding:16px}.hero{background:linear-gradient(135deg,#0f172a 0%, #1e293b 100%);color:#fff;border-radius:28px;padding:20px;box-shadow:var(--shadow);margin-bottom:16px}.hero-top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap}.hero h1{margin:0 0 6px;font-size:clamp(1.35rem,2vw,2rem)}.hero p{margin:0;color:rgba(255,255,255,.76)}.hero-actions{display:flex;gap:10px;flex-wrap:wrap}
-    .btn{border:none;border-radius:16px;padding:14px 18px;font-weight:800;font-size:15px;cursor:pointer;box-shadow:0 6px 16px rgba(15,23,42,.08)}.btn-primary{background:#fff;color:var(--ink)}.btn-dark{background:#111827;color:#fff}.btn-soft{background:#eef2f7;color:var(--ink)}
-    .layout{display:grid;grid-template-columns:1.08fr .92fr;gap:16px}@media (max-width:1040px){.layout{grid-template-columns:1fr}}.card{background:var(--surface);border-radius:24px;box-shadow:var(--shadow);padding:16px;margin-bottom:16px;border:1px solid rgba(15,23,42,.04)}.section-head{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.section-title{margin:0;font-size:1.08rem;font-weight:900}.section-sub{font-size:.84rem;color:var(--muted)}.tag{display:inline-flex;align-items:center;border-radius:999px;padding:7px 12px;font-size:.78rem;font-weight:800}.tag.blue{background:var(--blue-soft);color:var(--blue)}.tag.gray{background:var(--gray-soft);color:#475467}.tag.amber{background:var(--amber-soft);color:#b45309}.tag.dark{background:#e5e7eb;color:#111827}
-    .toolbar{display:grid;grid-template-columns:220px 1fr auto;gap:12px;align-items:center}@media (max-width:820px){.toolbar{grid-template-columns:1fr}}.quick-nav,input,textarea{width:100%;border:1px solid var(--line);background:#fff;color:var(--text);border-radius:16px;padding:13px 14px;font-size:16px;outline:none}input:focus,textarea:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(43,110,243,.12)}textarea{min-height:88px;resize:vertical}
-    details.panel{border:1px solid var(--line);border-radius:22px;background:#fff;margin-bottom:14px;overflow:hidden}details.panel[open]{box-shadow:var(--shadow)}details.panel summary{list-style:none;cursor:pointer;padding:16px 18px;font-weight:900;display:flex;justify-content:space-between;gap:10px;align-items:center}details.panel summary::-webkit-details-marker{display:none}.panel.alap summary{background:linear-gradient(180deg,#ffffff 0%, #f8fafc 100%)}.panel.nyers summary{background:linear-gradient(180deg,#f7faff 0%, #eef4ff 100%)}.panel.szaraz summary{background:linear-gradient(180deg,#fbfcfd 0%, #f3f4f6 100%)}.panel.egetett summary{background:linear-gradient(180deg,#fffaf0 0%, #fff2d9 100%)}.panel.rakat summary{background:linear-gradient(180deg,#ffffff 0%, #f8fafc 100%)}.summary-left{display:flex;flex-direction:column;gap:4px}.summary-right{display:flex;align-items:center;gap:8px}.panel-body{padding:16px}
-    .grid{display:grid;gap:12px}.grid-2{grid-template-columns:repeat(2,1fr)}.grid-3{grid-template-columns:repeat(3,1fr)}@media (max-width:720px){.grid-2,.grid-3{grid-template-columns:1fr}}label{display:block;font-size:.86rem;font-weight:800;margin:0 0 6px}.measure-group{margin-top:14px}.measure-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}.measure-title{font-size:.96rem;font-weight:900}.avg-pill{background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 12px;font-size:.82rem;font-weight:900}.measure-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.measure-grid.heights{grid-template-columns:repeat(4,1fr)}@media (max-width:720px){.measure-grid,.measure-grid.heights{grid-template-columns:repeat(2,1fr)}}.mini-card{background:rgba(255,255,255,.8);border:1px solid rgba(15,23,42,.06);border-radius:16px;padding:10px}.divider{height:1px;background:var(--line);margin:14px 0}
-    .image-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}@media (max-width:720px){.image-grid{grid-template-columns:repeat(2,1fr)}}.img-box{position:relative;border-radius:18px;overflow:hidden;background:#f8fafc;border:1px solid var(--line);min-height:140px}.img-box img{width:100%;height:100%;object-fit:cover;display:block}.remove-img{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.72);color:#fff;border:none;border-radius:999px;width:32px;height:32px;font-weight:900;cursor:pointer}.empty{padding:14px;border:1px dashed var(--line);border-radius:16px;color:var(--muted);background:#fff}
-    .brick-toolbar{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end}@media (max-width:720px){.brick-toolbar{grid-template-columns:1fr}}.quick-actions{display:flex;flex-wrap:wrap;gap:8px}.chip{border:none;border-radius:999px;padding:10px 12px;background:#fff;border:1px solid var(--line);font-size:.84rem;font-weight:800;cursor:pointer}.brick-list{display:grid;gap:10px;max-height:420px;overflow:auto;padding-right:4px}.brick{background:#fafbfc;border:1px solid var(--line);border-radius:18px;padding:12px}.brick-head{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:8px}.brick-num{font-weight:900}.count-badge{background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 10px;font-size:.78rem;font-weight:800}
-    .summary-panel{position:sticky;top:16px}@media (max-width:1040px){.summary-panel{position:static}}.summary-box{background:#f8fafc;border:1px solid var(--line);border-radius:20px;padding:14px;min-height:160px;white-space:pre-wrap;word-break:break-word;font-size:.92rem;line-height:1.45;max-height:220px;overflow:auto}.report-preview{background:#fff;border:1px solid var(--line);border-radius:24px;padding:24px}.exec-header{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;padding-bottom:16px;border-bottom:2px solid #e5e7eb}.exec-title{margin:0;font-size:1.38rem;font-weight:900;color:#0f172a}.exec-sub{margin-top:4px;color:var(--muted);font-size:.9rem}.exec-date{padding:10px 14px;background:#f8fafc;border:1px solid var(--line);border-radius:14px;font-weight:900}.exec-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}@media (max-width:820px){.exec-kpis{grid-template-columns:repeat(2,1fr)}}.kpi,.mini-kpi,.note-box{border:1px solid var(--line);border-radius:18px;padding:14px;background:#fafbfc}.k{font-size:.76rem;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.03em}.v{margin-top:6px;font-size:1.02rem;font-weight:900}.station-cards{display:grid;gap:14px}.station-card{border:1px solid var(--line);border-radius:22px;padding:16px;background:#fff}.station-card.nyers{border-left:8px solid var(--blue)}.station-card.szaraz{border-left:8px solid var(--gray)}.station-card.egetett{border-left:8px solid var(--amber)}.station-top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:10px;flex-wrap:wrap}.station-name{font-size:1.02rem;font-weight:900}.station-meta{display:grid;grid-template-columns:1.1fr .9fr .9fr .9fr;gap:10px}@media (max-width:900px){.station-meta{grid-template-columns:1fr 1fr}}@media (max-width:560px){.station-meta{grid-template-columns:1fr}}.station-photos{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}.station-photos img{width:100%;height:145px;object-fit:cover;border-radius:16px;border:1px solid var(--line)}@media (max-width:720px){.station-photos{grid-template-columns:1fr 1fr}.station-photos img{height:120px}}.defect-box{margin-top:16px;border:1px solid var(--line);border-radius:18px;overflow:hidden}.defect-head{background:#f8fafc;padding:12px 14px;font-weight:900;border-bottom:1px solid var(--line)}.defect-list{padding:12px 14px}.defect-list ul{margin:0;padding-left:18px}.defect-list li{margin:6px 0}.status{font-size:.84rem;color:var(--muted);margin-top:10px}
+    :root{
+      --bg:#eef2f7; --surface:#ffffff; --text:#172033; --muted:#667085; --line:#d6dbe3;
+      --shadow:0 10px 30px rgba(15,23,42,.08); --radius:20px;
+      --blue:#2b6ef3; --blue-soft:#e8f0ff;
+      --gray:#7b8794; --gray-soft:#f1f3f5;
+      --amber:#f59e0b; --amber-soft:#fff4db;
+      --ink:#0f172a;
+    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{margin:0;padding:0;background:linear-gradient(180deg,#f7f9fc 0%, #edf2f7 100%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+    body{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+    .app{max-width:1240px;margin:0 auto;padding:16px}
+    .hero{background:linear-gradient(135deg,#0f172a 0%, #1e293b 100%);color:#fff;border-radius:28px;padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+    .hero-top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap}
+    .hero h1{margin:0 0 6px;font-size:clamp(1.35rem,2vw,2rem)}
+    .hero p{margin:0;color:rgba(255,255,255,.76)}
+    .hero-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{border:none;border-radius:16px;padding:14px 18px;font-weight:800;font-size:15px;cursor:pointer;box-shadow:0 6px 16px rgba(15,23,42,.08)}
+    .btn-primary{background:#fff;color:var(--ink)}
+    .btn-dark{background:#111827;color:#fff}
+    .btn-soft{background:#eef2f7;color:var(--ink)}
+    .btn-blue{background:var(--blue);color:#fff}
+    .layout{display:grid;grid-template-columns:1.08fr .92fr;gap:16px}
+    @media (max-width:1040px){.layout{grid-template-columns:1fr}}
+    .card{background:var(--surface);border-radius:24px;box-shadow:var(--shadow);padding:16px;margin-bottom:16px;border:1px solid rgba(15,23,42,.04)}
+    .section-head{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+    .section-title{margin:0;font-size:1.08rem;font-weight:900}
+    .section-sub{font-size:.84rem;color:var(--muted)}
+    .tag{display:inline-flex;align-items:center;border-radius:999px;padding:7px 12px;font-size:.78rem;font-weight:800}
+    .tag.blue{background:var(--blue-soft);color:var(--blue)}
+    .tag.gray{background:var(--gray-soft);color:#475467}
+    .tag.amber{background:var(--amber-soft);color:#b45309}
+    .tag.dark{background:#e5e7eb;color:#111827}
+    .toolbar{display:grid;grid-template-columns:220px 1fr auto;gap:12px;align-items:center}
+    @media (max-width:820px){.toolbar{grid-template-columns:1fr}}
+    .quick-nav,input,textarea,select{width:100%;border:1px solid var(--line);background:#fff;color:var(--text);border-radius:16px;padding:13px 14px;font-size:16px;outline:none}
+    input:focus,textarea:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(43,110,243,.12)}
+    textarea{min-height:88px;resize:vertical}
+    details.panel{border:1px solid var(--line);border-radius:22px;background:#fff;margin-bottom:14px;overflow:hidden}
+    details.panel[open]{box-shadow:var(--shadow)}
+    details.panel summary{list-style:none;cursor:pointer;padding:16px 18px;font-weight:900;display:flex;justify-content:space-between;gap:10px;align-items:center}
+    details.panel summary::-webkit-details-marker{display:none}
+    .panel.alap summary{background:linear-gradient(180deg,#ffffff 0%, #f8fafc 100%)}
+    .panel.nyers summary{background:linear-gradient(180deg,#f7faff 0%, #eef4ff 100%)}
+    .panel.szaraz summary{background:linear-gradient(180deg,#fbfcfd 0%, #f3f4f6 100%)}
+    .panel.egetett summary{background:linear-gradient(180deg,#fffaf0 0%, #fff2d9 100%)}
+    .panel.rakat summary{background:linear-gradient(180deg,#ffffff 0%, #f8fafc 100%)}
+    .summary-left{display:flex;flex-direction:column;gap:4px}
+    .summary-right{display:flex;align-items:center;gap:8px}
+    .panel-body{padding:16px}
+    .grid{display:grid;gap:12px}
+    .grid-2{grid-template-columns:repeat(2,1fr)}
+    .grid-3{grid-template-columns:repeat(3,1fr)}
+    @media (max-width:720px){.grid-2,.grid-3{grid-template-columns:1fr}}
+    label{display:block;font-size:.86rem;font-weight:800;margin:0 0 6px}
+    .measure-group{margin-top:14px}
+    .measure-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+    .measure-title{font-size:.96rem;font-weight:900}
+    .avg-pill{background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 12px;font-size:.82rem;font-weight:900}
+    .measure-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .measure-grid.heights{grid-template-columns:repeat(4,1fr)}
+    @media (max-width:720px){.measure-grid,.measure-grid.heights{grid-template-columns:repeat(2,1fr)}}
+    .mini-card{background:rgba(255,255,255,.8);border:1px solid rgba(15,23,42,.06);border-radius:16px;padding:10px}
+    .divider{height:1px;background:var(--line);margin:14px 0}
+    .image-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+    @media (max-width:720px){.image-grid{grid-template-columns:repeat(2,1fr)}}
+    .img-box{position:relative;border-radius:18px;overflow:hidden;background:#f8fafc;border:1px solid var(--line);min-height:140px}
+    .img-box img{width:100%;height:100%;object-fit:cover;display:block}
+    .remove-img{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.72);color:#fff;border:none;border-radius:999px;width:32px;height:32px;font-weight:900;cursor:pointer}
+    .empty{padding:14px;border:1px dashed var(--line);border-radius:16px;color:var(--muted);background:#fff}
+    .brick-toolbar{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end}
+    @media (max-width:720px){.brick-toolbar{grid-template-columns:1fr}}
+    .quick-actions{display:flex;flex-wrap:wrap;gap:8px}
+    .chip{border:none;border-radius:999px;padding:10px 12px;background:#fff;border:1px solid var(--line);font-size:.84rem;font-weight:800;cursor:pointer}
+    .brick-list{display:grid;gap:10px;max-height:420px;overflow:auto;padding-right:4px}
+    .brick{background:#fafbfc;border:1px solid var(--line);border-radius:18px;padding:12px}
+    .brick-head{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:8px}
+    .brick-num{font-weight:900}
+    .count-badge{background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 10px;font-size:.78rem;font-weight:800}
+    .summary-panel{position:sticky;top:16px}
+    @media (max-width:1040px){.summary-panel{position:static}}
+    .summary-box{background:#f8fafc;border:1px solid var(--line);border-radius:20px;padding:14px;min-height:160px;white-space:pre-wrap;word-break:break-word;font-size:.92rem;line-height:1.45;max-height:220px;overflow:auto}
+    .report-preview{background:#fff;border:1px solid var(--line);border-radius:24px;padding:24px}
+    .exec-header{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;padding-bottom:16px;border-bottom:2px solid #e5e7eb}
+    .exec-title{margin:0;font-size:1.38rem;font-weight:900;color:#0f172a}
+    .exec-sub{margin-top:4px;color:var(--muted);font-size:.9rem}
+    .exec-date{padding:10px 14px;background:#f8fafc;border:1px solid var(--line);border-radius:14px;font-weight:900}
+    .exec-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}
+    @media (max-width:820px){.exec-kpis{grid-template-columns:repeat(2,1fr)}}
+    .kpi,.mini-kpi,.note-box{border:1px solid var(--line);border-radius:18px;padding:14px;background:#fafbfc}
+    .k{font-size:.76rem;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.03em}
+    .v{margin-top:6px;font-size:1.02rem;font-weight:900}
+    .station-cards{display:grid;gap:14px}
+    .station-card{border:1px solid var(--line);border-radius:22px;padding:16px;background:#fff}
+    .station-card.nyers{border-left:8px solid var(--blue)}
+    .station-card.szaraz{border-left:8px solid var(--gray)}
+    .station-card.egetett{border-left:8px solid var(--amber)}
+    .station-top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+    .station-name{font-size:1.02rem;font-weight:900}
+    .station-meta{display:grid;grid-template-columns:1.1fr .9fr .9fr .9fr;gap:10px}
+    @media (max-width:900px){.station-meta{grid-template-columns:1fr 1fr}}
+    @media (max-width:560px){.station-meta{grid-template-columns:1fr}}
+    .station-photos{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+    .station-photos img{width:100%;height:145px;object-fit:cover;border-radius:16px;border:1px solid var(--line)}
+    @media (max-width:720px){.station-photos{grid-template-columns:1fr 1fr}.station-photos img{height:120px}}
+    .defect-box{margin-top:16px;border:1px solid var(--line);border-radius:18px;overflow:hidden}
+    .defect-head{background:#f8fafc;padding:12px 14px;font-weight:900;border-bottom:1px solid var(--line)}
+    .defect-list{padding:12px 14px}
+    .defect-list ul{margin:0;padding-left:18px}
+    .defect-list li{margin:6px 0}
+    .status{font-size:.84rem;color:var(--muted);margin-top:10px}
   </style>
 </head>
 <body>
   <div class="app">
     <section class="hero no-print">
       <div class="hero-top">
-        <div><h1>Napi mintaellenőrzés V5</h1><p>Közvetlen PDF generálás, nem nyomtatási ablak. A PDF külön épül fel az adatokból.</p></div>
-        <div class="hero-actions"><button class="btn btn-primary" id="buildReportBtn">Riport frissítése</button><button class="btn btn-dark" id="generatePdfBtn">PDF generálás</button></div>
+        <div>
+          <h1>Napi mintaellenőrzés V5 javított</h1>
+          <p>Visszakerült a teljes mérés, rakat bontás és a közvetlen PDF generálás is.</p>
+        </div>
+        <div class="hero-actions">
+          <button class="btn btn-primary" id="buildReportBtn">Riport frissítése</button>
+          <button class="btn btn-dark" id="generatePdfBtn">PDF generálás</button>
+        </div>
       </div>
     </section>
 
     <div class="layout">
       <main class="left-column">
         <section class="card no-print">
-          <div class="section-head"><div><h2 class="section-title">Gyors navigáció</h2><div class="section-sub">A kiválasztott blokk nyílik meg</div></div><span class="tag dark">V5</span></div>
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">Gyors navigáció</h2>
+              <div class="section-sub">A kiválasztott blokk nyílik meg</div>
+            </div>
+            <span class="tag dark">V5 fix</span>
+          </div>
           <div class="toolbar">
             <select class="quick-nav" id="sectionJump">
-              <option value="panel-alap">Alapadatok</option><option value="panel-nyers">Nyers</option><option value="panel-szaraz">Száraz</option><option value="panel-egetett">Égetett</option><option value="panel-rakat">Rakat bontás</option>
+              <option value="panel-alap">Alapadatok</option>
+              <option value="panel-nyers">Nyers</option>
+              <option value="panel-szaraz">Száraz</option>
+              <option value="panel-egetett">Égetett</option>
+              <option value="panel-rakat">Rakat bontás</option>
             </select>
-            <div class="section-sub">A PDF nem lesz üres: generálás előtt az aktuális adatokat közvetlenül összeszedi.</div>
+            <div class="section-sub">A PDF nem üres: generálás előtt az aktuális adatokat közvetlenül összeszedi.</div>
             <button class="btn btn-soft" id="openAllBtn">Minden blokk nyitása</button>
           </div>
         </section>
 
-        <details class="panel alap" id="panel-alap" open><summary><div class="summary-left"><div class="section-title">Alapadatok</div><div class="section-sub">Dátum, műszak, tételszám, riport készítő</div></div><div class="summary-right"><span class="tag dark">közös adatok</span><span>▾</span></div></summary><div class="panel-body"><div class="grid grid-3"><div><label>Dátum</label><input type="date" id="reportDate"></div><div><label>Műszakjelzés</label><input type="text" id="shiftCode" placeholder="pl. A / B / C"></div><div><label>Tételszám</label><input type="text" id="lotNumber" placeholder="pl. T-2026-001"></div></div><div class="grid grid-2" style="margin-top:12px"><div><label>Riport készítő</label><input type="text" id="inspectorName" placeholder="Név / kezelő"></div><div><label>Rakat bontás műszakjelzés</label><input type="text" id="rackShiftCode" placeholder="pl. B"></div></div><div style="margin-top:12px"><label>Általános megjegyzés</label><textarea id="generalNote" placeholder="Napi összefoglaló megjegyzés..."></textarea></div></div></details>
-        <details class="panel nyers" id="panel-nyers"><summary><div class="summary-left"><div class="section-title">Nyers állomás</div><div class="section-sub">Kék blokk – termék, mérések, képek</div></div><div class="summary-right"><span class="tag blue">Nyers</span><span>▾</span></div></summary><div class="panel-body"><div class="grid grid-2"><div><label>Termék neve</label><input type="text" id="product_nyers" placeholder="Termék neve"></div><div><label>Állomás megjegyzés</label><input type="text" id="note_nyers" placeholder="pl. felületi eltérés, repedés"></div></div><div class="measure-group"><div class="measure-head"><div class="measure-title">Hosszúság – 6 mérés</div><div class="avg-pill">Átlag: <span id="avg_len_nyers">-</span></div></div><div class="measure-grid" id="len_nyers"></div></div><div class="measure-group"><div class="measure-head"><div class="measure-title">Szélesség – 6 mérés</div><div class="avg-pill">Átlag: <span id="avg_wid_nyers">-</span></div></div><div class="measure-grid" id="wid_nyers"></div></div><div class="measure-group"><div class="measure-head"><div class="measure-title">Magasság – 7 mérés</div><div class="avg-pill">Átlag: <span id="avg_hei_nyers">-</span></div></div><div class="measure-grid heights" id="hei_nyers"></div></div><div class="divider"></div><label>Nyershez tartozó képek</label><input type="file" id="photo_nyers" accept="image/*" multiple><div id="gallery_nyers" class="image-grid"></div></div></details>
-        <details class="panel szaraz" id="panel-szaraz"><summary><div class="summary-left"><div class="section-title">Száraz állomás</div><div class="section-sub">Szürke blokk – termék, mérések, képek</div></div><div class="summary-right"><span class="tag gray">Száraz</span><span>▾</span></div></summary><div class="panel-body"><div class="grid grid-2"><div><label>Termék neve</label><input type="text" id="product_szaraz" placeholder="Termék neve"></div><div><label>Állomás megjegyzés</label><input type="text" id="note_szaraz" placeholder="pl. élhiba, felületi hiba"></div></div><div class="measure-group"><div class="measure-head"><div class="measure-title">Hosszúság – 6 mérés</div><div class="avg-pill">Átlag: <span id="avg_len_szaraz">-</span></div></div><div class="measure-grid" id="len_szaraz"></div></div><div class="measure-group"><div class="measure-head"><div class="measure-title">Szélesség – 6 mérés</div><div class="avg-pill">Átlag: <span id="avg_wid_szaraz">-</span></div></div><div class="measure-grid" id="wid_szaraz"></div></div><div class="measure-group"><div class="measure-head"><div class="measure-title">Magasság – 7 mérés</div><div class="avg-pill">Átlag: <span id="avg_hei_szaraz">-</span></div></div><div class="measure-grid heights" id="hei_szaraz"></div></div><div class="divider"></div><label>Szárazhoz tartozó képek</label><input type="file" id="photo_szaraz" accept="image/*" multiple><div id="gallery_szaraz" class="image-grid"></div></div></details>
-        <details class="panel egetett" id="panel-egetett"><summary><div class="summary-left"><div class="section-title">Égetett állomás</div><div class="section-sub">Narancs blokk – termék, mérések, képek</div></div><div class="summary-right"><span class="tag amber">Égetett</span><span>▾</span></div></summary><div class="panel-body"><div class="grid grid-2"><div><label>Termék neve</label><input type="text" id="product_egetett" placeholder="Termék neve"></div><div><label>Állomás megjegyzés</label><input type="text" id="note_egetett" placeholder="pl. törés, égetési eltérés"></div></div><div class="measure-group"><div class="measure-head"><div class="measure-title">Hosszúság – 6 mérés</div><div class="avg-pill">Átlag: <span id="avg_len_egetett">-</span></div></div><div class="measure-grid" id="len_egetett"></div></div><div class="measure-group"><div class="measure-head"><div class="measure-title">Szélesség – 6 mérés</div><div class="avg-pill">Átlag: <span id="avg_wid_egetett">-</span></div></div><div class="measure-grid" id="wid_egetett"></div></div><div class="measure-group"><div class="measure-head"><div class="measure-title">Magasság – 7 mérés</div><div class="avg-pill">Átlag: <span id="avg_hei_egetett">-</span></div></div><div class="measure-grid heights" id="hei_egetett"></div></div><div class="divider"></div><label>Égetetthez tartozó képek</label><input type="file" id="photo_egetett" accept="image/*" multiple><div id="gallery_egetett" class="image-grid"></div></div></details>
-        <details class="panel rakat" id="panel-rakat"><summary><div class="summary-left"><div class="section-title">Rakat bontás</div><div class="section-sub">Téglánkénti hibák és gyors hibagombok</div></div><div class="summary-right"><span class="tag dark">Rakat</span><span>▾</span></div></summary><div class="panel-body"><div class="brick-toolbar"><div class="grid grid-2"><div><label>Rakat darabszám</label><input type="number" id="brickCount" min="1" max="500" step="1" placeholder="pl. 80"></div><div><label>Gyors hibaszöveg</label><input type="text" id="quickDefectText" placeholder="Kiválasztott hibaszöveg"></div></div><button class="btn btn-soft" id="generateBricksBtn" style="margin-top:0">Téglák létrehozása</button></div><div class="quick-actions" style="margin-top:12px"><button class="chip defect-chip" data-text="repedés">repedés</button><button class="chip defect-chip" data-text="sarokhibás">sarokhibás</button><button class="chip defect-chip" data-text="törött">törött</button><button class="chip defect-chip" data-text="felületi hiba">felületi hiba</button><button class="chip defect-chip" data-text="színeltérés">színeltérés</button></div><div class="divider"></div><div id="brickList" class="brick-list"></div></div></details>
+        <details class="panel alap" id="panel-alap" open>
+          <summary><div class="summary-left"><div class="section-title">Alapadatok</div><div class="section-sub">Dátum, műszak, tételszám, riport készítő</div></div><div class="summary-right"><span class="tag dark">közös adatok</span><span>▾</span></div></summary>
+          <div class="panel-body">
+            <div class="grid grid-3">
+              <div><label>Dátum</label><input type="date" id="reportDate"></div>
+              <div><label>Műszakjelzés</label><input type="text" id="shiftCode" placeholder="pl. A / B / C"></div>
+              <div><label>Tételszám</label><input type="text" id="lotNumber" placeholder="pl. T-2026-001"></div>
+            </div>
+            <div class="grid grid-2" style="margin-top:12px">
+              <div><label>Riport készítő</label><input type="text" id="inspectorName" placeholder="Név / kezelő"></div>
+              <div><label>Rakat bontás műszakjelzés</label><input type="text" id="rackShiftCode" placeholder="pl. B"></div>
+            </div>
+            <div style="margin-top:12px">
+              <label>Általános megjegyzés</label>
+              <textarea id="generalNote" placeholder="Napi összefoglaló megjegyzés..."></textarea>
+            </div>
+          </div>
+        </details>
+
+        <details class="panel nyers" id="panel-nyers">
+          <summary><div class="summary-left"><div class="section-title">Nyers állomás</div><div class="section-sub">Kék blokk – termék, mérések, képek</div></div><div class="summary-right"><span class="tag blue">Nyers</span><span>▾</span></div></summary>
+          <div class="panel-body">
+            <div class="grid grid-2">
+              <div><label>Termék neve</label><input type="text" id="product_nyers" placeholder="Termék neve"></div>
+              <div><label>Állomás megjegyzés</label><input type="text" id="note_nyers" placeholder="pl. felületi eltérés, repedés"></div>
+            </div>
+            <div class="measure-group"><div class="measure-head"><div class="measure-title">Hosszúság – 6 mérés</div><div class="avg-pill">Átlag: <span id="avg_len_nyers">-</span></div></div><div class="measure-grid" id="len_nyers"></div></div>
+            <div class="measure-group"><div class="measure-head"><div class="measure-title">Szélesség – 6 mérés</div><div class="avg-pill">Átlag: <span id="avg_wid_nyers">-</span></div></div><div class="measure-grid" id="wid_nyers"></div></div>
+            <div class="measure-group"><div class="measure-head"><div class="measure-title">Magasság – 7 mérés</div><div class="avg-pill">Átlag: <span id="avg_hei_nyers">-</span></div></div><div class="measure-grid heights" id="hei_nyers"></div></div>
+            <div class="divider"></div>
+            <label>Nyershez tartozó képek</label>
+            <input type="file" id="photo_nyers" accept="image/*" multiple>
+            <div id="gallery_nyers" class="image-grid"></div>
+          </div>
+        </details>
+
+        <details class="panel szaraz" id="panel-szaraz">
+          <summary><div class="summary-left"><div class="section-title">Száraz állomás</div><div class="section-sub">Szürke blokk – termék, mérések, képek</div></div><div class="summary-right"><span class="tag gray">Száraz</span><span>▾</span></div></summary>
+          <div class="panel-body">
+            <div class="grid grid-2">
+              <div><label>Termék neve</label><input type="text" id="product_szaraz" placeholder="Termék neve"></div>
+              <div><label>Állomás megjegyzés</label><input type="text" id="note_szaraz" placeholder="pl. élhiba, felületi hiba"></div>
+            </div>
+            <div class="measure-group"><div class="measure-head"><div class="measure-title">Hosszúság – 6 mérés</div><div class="avg-pill">Átlag: <span id="avg_len_szaraz">-</span></div></div><div class="measure-grid" id="len_szaraz"></div></div>
+            <div class="measure-group"><div class="measure-head"><div class="measure-title">Szélesség – 6 mérés</div><div class="avg-pill">Átlag: <span id="avg_wid_szaraz">-</span></div></div><div class="measure-grid" id="wid_szaraz"></div></div>
+            <div class="measure-group"><div class="measure-head"><div class="measure-title">Magasság – 7 mérés</div><div class="avg-pill">Átlag: <span id="avg_hei_szaraz">-</span></div></div><div class="measure-grid heights" id="hei_szaraz"></div></div>
+            <div class="divider"></div>
+            <label>Szárazhoz tartozó képek</label>
+            <input type="file" id="photo_szaraz" accept="image/*" multiple>
+            <div id="gallery_szaraz" class="image-grid"></div>
+          </div>
+        </details>
+
+        <details class="panel egetett" id="panel-egetett">
+          <summary><div class="summary-left"><div class="section-title">Égetett állomás</div><div class="section-sub">Narancs blokk – termék, mérések, képek</div></div><div class="summary-right"><span class="tag amber">Égetett</span><span>▾</span></div></summary>
+          <div class="panel-body">
+            <div class="grid grid-2">
+              <div><label>Termék neve</label><input type="text" id="product_egetett" placeholder="Termék neve"></div>
+              <div><label>Állomás megjegyzés</label><input type="text" id="note_egetett" placeholder="pl. törés, égetési eltérés"></div>
+            </div>
+            <div class="measure-group"><div class="measure-head"><div class="measure-title">Hosszúság – 6 mérés</div><div class="avg-pill">Átlag: <span id="avg_len_egetett">-</span></div></div><div class="measure-grid" id="len_egetett"></div></div>
+            <div class="measure-group"><div class="measure-head"><div class="measure-title">Szélesség – 6 mérés</div><div class="avg-pill">Átlag: <span id="avg_wid_egetett">-</span></div></div><div class="measure-grid" id="wid_egetett"></div></div>
+            <div class="measure-group"><div class="measure-head"><div class="measure-title">Magasság – 7 mérés</div><div class="avg-pill">Átlag: <span id="avg_hei_egetett">-</span></div></div><div class="measure-grid heights" id="hei_egetett"></div></div>
+            <div class="divider"></div>
+            <label>Égetetthez tartozó képek</label>
+            <input type="file" id="photo_egetett" accept="image/*" multiple>
+            <div id="gallery_egetett" class="image-grid"></div>
+          </div>
+        </details>
+
+        <details class="panel rakat" id="panel-rakat">
+          <summary><div class="summary-left"><div class="section-title">Rakat bontás</div><div class="section-sub">Téglánkénti hibák és gyors hibagombok</div></div><div class="summary-right"><span class="tag dark">Rakat</span><span>▾</span></div></summary>
+          <div class="panel-body">
+            <div class="brick-toolbar">
+              <div class="grid grid-2">
+                <div><label>Rakat darabszám</label><input type="number" id="brickCount" min="1" max="500" step="1" placeholder="pl. 80"></div>
+                <div><label>Gyors hibaszöveg</label><input type="text" id="quickDefectText" placeholder="Kiválasztott hibaszöveg"></div>
+              </div>
+              <button class="btn btn-soft" id="generateBricksBtn" style="margin-top:0">Téglák létrehozása</button>
+            </div>
+            <div class="quick-actions" style="margin-top:12px">
+              <button class="chip defect-chip" data-text="repedés">repedés</button>
+              <button class="chip defect-chip" data-text="sarokhibás">sarokhibás</button>
+              <button class="chip defect-chip" data-text="törött">törött</button>
+              <button class="chip defect-chip" data-text="felületi hiba">felületi hiba</button>
+              <button class="chip defect-chip" data-text="színeltérés">színeltérés</button>
+            </div>
+            <div class="divider"></div>
+            <div id="brickList" class="brick-list"></div>
+          </div>
+        </details>
       </main>
 
       <aside class="summary-panel">
-        <section class="card no-print"><div class="section-head"><div><h2 class="section-title">Gyors összefoglaló</h2><div class="section-sub">Az adatok rövid kivonata</div></div></div><div id="quickSummary" class="summary-box">Itt jelenik meg az összefoglaló.</div><div id="pdfStatus" class="status">A PDF gomb külön fájlt készít. Nem nyomtatási ablakból ment.</div></section>
-        <section class="card"><div class="section-head"><div><h2 class="section-title">Riport előnézet</h2><div class="section-sub">Ebből az adatszerkezetből készül a PDF</div></div></div><div class="report-preview"><div class="exec-header"><div><div class="exec-title">Napi mintaellenőrzési riport</div><div class="exec-sub">Vezetői összefoglaló napi minőségellenőrzéshez</div></div><div class="exec-date" id="execDate">-</div></div><div class="exec-kpis"><div class="kpi"><div class="k">Műszak</div><div class="v" id="execShift">-</div></div><div class="kpi"><div class="k">Tételszám</div><div class="v" id="execLot">-</div></div><div class="kpi"><div class="k">Riport készítő</div><div class="v" id="execInspector">-</div></div><div class="kpi"><div class="k">Hibás téglák</div><div class="v" id="execDefectCount">0 db</div></div></div><div class="note-box"><div class="k">Általános megjegyzés</div><div class="v" id="execNote" style="font-size:.96rem">-</div></div><div class="station-cards" id="stationCards" style="margin-top:16px"></div><div class="defect-box"><div class="defect-head">Rakat bontás – hibák összefoglalása</div><div class="defect-list"><div style="font-weight:800;margin-bottom:8px">Rakat bontás műszak: <span id="execRackShift">-</span> · Darabszám: <span id="execBrickCount">-</span></div><div id="execDefectList">Nincs rögzített hiba.</div></div></div></div></section>
+        <section class="card no-print">
+          <div class="section-head">
+            <div><h2 class="section-title">Gyors összefoglaló</h2><div class="section-sub">Az adatok rövid kivonata</div></div>
+          </div>
+          <div id="quickSummary" class="summary-box">Itt jelenik meg az összefoglaló.</div>
+          <div id="pdfStatus" class="status">A PDF gomb külön fájlt készít.</div>
+        </section>
+
+        <section class="card">
+          <div class="section-head">
+            <div><h2 class="section-title">Riport előnézet</h2><div class="section-sub">Ebből az adatszerkezetből készül a PDF</div></div>
+          </div>
+          <div class="report-preview">
+            <div class="exec-header">
+              <div>
+                <div class="exec-title">Napi mintaellenőrzési riport</div>
+                <div class="exec-sub">Vezetői összefoglaló napi minőségellenőrzéshez</div>
+              </div>
+              <div class="exec-date" id="execDate">-</div>
+            </div>
+
+            <div class="exec-kpis">
+              <div class="kpi"><div class="k">Műszak</div><div class="v" id="execShift">-</div></div>
+              <div class="kpi"><div class="k">Tételszám</div><div class="v" id="execLot">-</div></div>
+              <div class="kpi"><div class="k">Riport készítő</div><div class="v" id="execInspector">-</div></div>
+              <div class="kpi"><div class="k">Hibás téglák</div><div class="v" id="execDefectCount">0 db</div></div>
+            </div>
+
+            <div class="note-box">
+              <div class="k">Általános megjegyzés</div>
+              <div class="v" id="execNote" style="font-size:.96rem">-</div>
+            </div>
+
+            <div class="station-cards" id="stationCards" style="margin-top:16px"></div>
+
+            <div class="defect-box">
+              <div class="defect-head">Rakat bontás – hibák összefoglalása</div>
+              <div class="defect-list">
+                <div style="font-weight:800;margin-bottom:8px">Rakat bontás műszak: <span id="execRackShift">-</span> · Darabszám: <span id="execBrickCount">-</span></div>
+                <div id="execDefectList">Nincs rögzített hiba.</div>
+              </div>
+            </div>
+          </div>
+        </section>
       </aside>
     </div>
   </div>
 
   <script>
-    const stationKeys=[{key:'nyers',label:'Nyers',className:'nyers',color:[43,110,243]},{key:'szaraz',label:'Száraz',className:'szaraz',color:[123,135,148]},{key:'egetett',label:'Égetett',className:'egetett',color:[245,158,11]}];
-    const sectionPhotos={nyers:[],szaraz:[],egetett:[]};
-    function setToday(){const d=new Date();document.getElementById('reportDate').value=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
-    function createInputs(containerId,count,label){const c=document.getElementById(containerId);c.innerHTML=Array.from({length:count},(_,i)=>`<div class="mini-card"><label>${label} #${i+1}</label><input type="text" inputmode="decimal" placeholder="mm"></div>`).join('')}
-    function parseNum(v){const n=parseFloat(String(v).replace(',', '.'));return isNaN(n)?null:n}
-    function valuesFrom(id){return Array.from(document.querySelectorAll(`#${id} input`)).map(i=>i.value.trim())}
-    function averageFrom(id){const nums=valuesFrom(id).map(parseNum).filter(v=>v!==null);return nums.length?(nums.reduce((a,b)=>a+b,0)/nums.length).toFixed(2).replace('.',','):'-'}
-    function bindAverage(id,target){document.querySelectorAll(`#${id} input`).forEach(inp=>inp.addEventListener('input',()=>{document.getElementById(target).textContent=averageFrom(id);buildExecutiveReport()}))}
-    function escapeHtml(text){return String(text).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;')}
-    function stationData(key){return{product:document.getElementById(`product_${key}`).value.trim()||'-',note:document.getElementById(`note_${key}`).value.trim()||'-',avgL:averageFrom(`len_${key}`),avgW:averageFrom(`wid_${key}`),avgH:averageFrom(`hei_${key}`),photoCount:sectionPhotos[key].length}}
-    function getDefects(){return Array.from(document.querySelectorAll('.brick-defect')).map(inp=>({brick:inp.dataset.brick,defect:inp.value.trim()})).filter(r=>r.defect)}
-    function collectReportData(){return{date:document.getElementById('reportDate').value||'-',shift:document.getElementById('shiftCode').value.trim()||'-',lot:document.getElementById('lotNumber').value.trim()||'-',inspector:document.getElementById('inspectorName').value.trim()||'-',rackShift:document.getElementById('rackShiftCode').value.trim()||'-',general:document.getElementById('generalNote').value.trim()||'-',brickCount:document.getElementById('brickCount').value.trim()||'-',defects:getDefects(),stations:stationKeys.map(st=>({key:st.key,label:st.label,className:st.className,color:st.color,...stationData(st.key),photos:sectionPhotos[st.key]}))}}
-    function updateQuickSummary(){const data=collectReportData();document.getElementById('quickSummary').textContent=['NAPI MINTAELLENŐRZÉSI ÖSSZEFOGLALÓ','','Dátum: '+data.date,'Műszak: '+data.shift,'Tételszám: '+data.lot,'Riport készítő: '+data.inspector,'',...data.stations.flatMap(st=>[st.label,`  Termék: ${st.product}`,`  Megjegyzés: ${st.note}`,`  H: ${st.avgL} | Sz: ${st.avgW} | M: ${st.avgH}`,`  Képek: ${st.photoCount} db`,''}),'Rakat bontás',`  Műszak: ${data.rackShift}`,`  Darabszám: ${data.brickCount}`,`  Hibás téglák: ${data.defects.length} db`].join('\n');return data}
-    function buildStationCard(st){const photosHtml=st.photos.length?`<div class="station-photos">${st.photos.map(p=>`<img src="${p.data}" alt="${st.label} kép">`).join('')}</div>`:`<div class="empty" style="margin-top:12px">Ehhez az állomáshoz nincs csatolt kép.</div>`;return `<section class="station-card ${st.className}"><div class="station-top"><div class="station-name">${st.label} állomás</div><div class="count-badge">${st.photos.length} kép</div></div><div class="station-meta"><div class="mini-kpi"><div class="k">Termék</div><div class="v">${escapeHtml(st.product)}</div></div><div class="mini-kpi"><div class="k">Hosszúság átlag</div><div class="v">${escapeHtml(st.avgL)}</div></div><div class="mini-kpi"><div class="k">Szélesség átlag</div><div class="v">${escapeHtml(st.avgW)}</div></div><div class="mini-kpi"><div class="k">Magasság átlag</div><div class="v">${escapeHtml(st.avgH)}</div></div></div><div class="note-box" style="margin-top:12px"><div class="k">Állomás megjegyzés</div><div class="v" style="font-size:.94rem">${escapeHtml(st.note)}</div></div>${photosHtml}</section>`}
-    function buildExecutiveReport(){const data=updateQuickSummary();document.getElementById('execDate').textContent=data.date;document.getElementById('execShift').textContent=data.shift;document.getElementById('execLot').textContent=data.lot;document.getElementById('execInspector').textContent=data.inspector;document.getElementById('execNote').textContent=data.general;document.getElementById('execDefectCount').textContent=`${data.defects.length} db`;document.getElementById('execRackShift').textContent=data.rackShift;document.getElementById('execBrickCount').textContent=data.brickCount;document.getElementById('stationCards').innerHTML=data.stations.map(buildStationCard).join('');document.getElementById('execDefectList').innerHTML=data.defects.length?`<ul>${data.defects.map(d=>`<li><strong>${escapeHtml(d.brick)}. tégla:</strong> ${escapeHtml(d.defect)}</li>`).join('')}</ul>`:'Nincs rögzített hiba.';return data}
-    function renderGallery(section){const g=document.getElementById(`gallery_${section}`),photos=sectionPhotos[section];g.innerHTML=photos.length?photos.map((p,idx)=>`<div class="img-box"><img src="${p.data}" alt="${section} kép ${idx+1}"><button class="remove-img" type="button" onclick="removePhoto('${section}', ${idx})">×</button></div>`).join(''):`<div class="empty">Ehhez a blokkhoz még nincs csatolt kép.</div>`}
-    function removePhoto(section,idx){sectionPhotos[section].splice(idx,1);renderGallery(section);buildExecutiveReport()}
-    function handlePhotoInput(section,input){Array.from(input.files||[]).forEach(file=>{const r=new FileReader();r.onload=e=>{sectionPhotos[section].push({name:file.name,data:e.target.result});renderGallery(section);buildExecutiveReport()};r.readAsDataURL(file)});input.value=''}
-    function renderBricks(){const count=Math.min(500,Math.max(0,parseInt(document.getElementById('brickCount').value||'0',10)));const list=document.getElementById('brickList');list.innerHTML=count?Array.from({length:count},(_,i)=>`<div class="brick"><div class="brick-head"><div class="brick-num">${i+1}. tégla</div><div class="count-badge">hiba mező</div></div><input type="text" class="brick-defect" data-brick="${i+1}" placeholder="pl. repedés, sarokhibás, törött"></div>`).join(''):`<div class="empty">Adj meg darabszámot, majd hozd létre a téglákat.</div>`;list.querySelectorAll('.brick-defect').forEach(inp=>inp.addEventListener('input',buildExecutiveReport));buildExecutiveReport()}
-    function openOnly(targetId){document.querySelectorAll('details.panel').forEach(d=>d.open=(d.id===targetId));document.getElementById(targetId).scrollIntoView({behavior:'smooth',block:'start'})}
-    async function generatePdf(){const data=buildExecutiveReport();const status=document.getElementById('pdfStatus');status.textContent='PDF generálás folyamatban...';try{const{jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});const pageW=doc.internal.pageSize.getWidth(),pageH=doc.internal.pageSize.getHeight(),margin=12,contentW=pageW-margin*2;let y=margin;function ensureSpace(need){if(y+need>pageH-margin){doc.addPage();y=margin}}function box(title,value,x,yy,w,h=18){doc.setDrawColor(214,219,227);doc.setFillColor(250,251,252);doc.roundedRect(x,yy,w,h,3,3,'FD');doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(102,112,133);doc.text(title.toUpperCase(),x+4,yy+5);doc.setFontSize(11);doc.setTextColor(23,32,51);doc.text(doc.splitTextToSize(String(value||'-'),w-8),x+4,yy+11)}function sectionHeader(title,color){ensureSpace(10);doc.setFillColor(color[0],color[1],color[2]);doc.roundedRect(margin,y,4,10,1,1,'F');doc.setFont('helvetica','bold');doc.setFontSize(13);doc.setTextColor(15,23,42);doc.text(title,margin+8,y+7);y+=12}function addStation(st){ensureSpace(55);sectionHeader(st.label+' állomás',st.color);const colW=(contentW-8)/4;box('Termék',st.product,margin,y,colW);box('Hosszúság átlag',st.avgL,margin+colW+2.5,y,colW);box('Szélesség átlag',st.avgW,margin+(colW+2.5)*2,y,colW);box('Magasság átlag',st.avgH,margin+(colW+2.5)*3,y,colW);y+=22;doc.setDrawColor(214,219,227);doc.setFillColor(250,251,252);doc.roundedRect(margin,y,contentW,18,3,3,'FD');doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(102,112,133);doc.text('ÁLLOMÁS MEGJEGYZÉS',margin+4,y+5);doc.setFont('helvetica','normal');doc.setFontSize(10);doc.setTextColor(23,32,51);const noteLines=doc.splitTextToSize(String(st.note||'-'),contentW-8);doc.text(noteLines,margin+4,y+11);y+=Math.max(20,noteLines.length*5+10);if(st.photos.length){const imgW=(contentW-8)/3;let row=0;for(let i=0;i<st.photos.length;i++){if(row===0)ensureSpace(46);const imgX=margin+(imgW+4)*row;const fmt=st.photos[i].data.startsWith('data:image/png')?'PNG':'JPEG';doc.addImage(st.photos[i].data,fmt,imgX,y,imgW,40);row++;if(row===3||i===st.photos.length-1){y+=44;row=0}}}else{ensureSpace(12);doc.setFont('helvetica','italic');doc.setFontSize(9);doc.setTextColor(102,112,133);doc.text('Ehhez az állomáshoz nincs csatolt kép.',margin,y+5);y+=10}}
-          doc.setFont('helvetica','bold');doc.setFontSize(18);doc.setTextColor(15,23,42);doc.text('Napi mintaellenőrzési riport',margin,y);y+=6;doc.setFont('helvetica','normal');doc.setFontSize(10);doc.setTextColor(102,112,133);doc.text('Vezetői összefoglaló napi minőségellenőrzéshez',margin,y);y+=8;const kpiW=(contentW-9)/4;box('Dátum',data.date,margin,y,kpiW);box('Műszak',data.shift,margin+kpiW+3,y,kpiW);box('Tételszám',data.lot,margin+(kpiW+3)*2,y,kpiW);box('Riport készítő',data.inspector,margin+(kpiW+3)*3,y,kpiW);y+=24;doc.setDrawColor(214,219,227);doc.setFillColor(250,251,252);doc.roundedRect(margin,y,contentW,20,3,3,'FD');doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(102,112,133);doc.text('ÁLTALÁNOS MEGJEGYZÉS',margin+4,y+5);doc.setFont('helvetica','normal');doc.setFontSize(10);doc.setTextColor(23,32,51);const generalLines=doc.splitTextToSize(String(data.general||'-'),contentW-8);doc.text(generalLines,margin+4,y+11);y+=Math.max(22,generalLines.length*5+10);data.stations.forEach(addStation);ensureSpace(30);sectionHeader('Rakat bontás – hibák összefoglalása',[17,24,39]);box('Rakat bontás műszak',data.rackShift,margin,y,(contentW-3)/2);box('Rakat darabszám',data.brickCount,margin+((contentW-3)/2)+3,y,(contentW-3)/2);y+=24;doc.setDrawColor(214,219,227);doc.setFillColor(250,251,252);const h=Math.max(18,(data.defects.length||1)*6+10);ensureSpace(h+4);doc.roundedRect(margin,y,contentW,h,3,3,'FD');doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(102,112,133);doc.text('HIBÁK LISTÁJA',margin+4,y+5);doc.setFont('helvetica','normal');doc.setFontSize(10);doc.setTextColor(23,32,51);if(data.defects.length){let dy=y+11;data.defects.forEach(d=>{const lines=doc.splitTextToSize(`${d.brick}. tégla: ${d.defect}`,contentW-8);doc.text(lines,margin+4,dy);dy+=lines.length*5})}else{doc.text('Nincs rögzített hiba.',margin+4,y+11)};doc.save(`napi-riport-${String(data.date||'datum-nelkul').replaceAll('.','-').replaceAll('/','-')}.pdf`);status.textContent='A PDF elkészült és letöltődött.'}catch(err){status.textContent='A PDF generálás nem sikerült. Ellenőrizd, hogy weboldalként fut-e a fájl.'}}
-    function attachGlobalListeners(){document.querySelectorAll('details.panel').forEach(d=>d.addEventListener('toggle',()=>{if(d.open){document.querySelectorAll('details.panel').forEach(o=>{if(o!==d)o.open=false})}}));document.getElementById('sectionJump').addEventListener('change',e=>openOnly(e.target.value));document.getElementById('openAllBtn').addEventListener('click',()=>document.querySelectorAll('details.panel').forEach(d=>d.open=true));document.querySelectorAll('input, textarea').forEach(el=>{if(!el.classList.contains('brick-defect')){el.addEventListener('input',buildExecutiveReport);el.addEventListener('change',buildExecutiveReport)}});stationKeys.forEach(st=>{document.getElementById(`photo_${st.key}`).addEventListener('change',e=>handlePhotoInput(st.key,e.target));renderGallery(st.key)});document.getElementById('generateBricksBtn').addEventListener('click',renderBricks);document.getElementById('buildReportBtn').addEventListener('click',buildExecutiveReport);document.getElementById('generatePdfBtn').addEventListener('click',generatePdf);document.querySelectorAll('.defect-chip').forEach(btn=>btn.addEventListener('click',()=>document.getElementById('quickDefectText').value=btn.dataset.text));document.getElementById('brickList').addEventListener('dblclick',e=>{if(e.target.classList.contains('brick-defect')){const txt=document.getElementById('quickDefectText').value.trim();if(txt){e.target.value=txt;buildExecutiveReport()}}})}
-    createInputs('len_nyers',6,'Hossz');createInputs('wid_nyers',6,'Szél');createInputs('hei_nyers',7,'Mag');createInputs('len_szaraz',6,'Hossz');createInputs('wid_szaraz',6,'Szél');createInputs('hei_szaraz',7,'Mag');createInputs('len_egetett',6,'Hossz');createInputs('wid_egetett',6,'Szél');createInputs('hei_egetett',7,'Mag');bindAverage('len_nyers','avg_len_nyers');bindAverage('wid_nyers','avg_wid_nyers');bindAverage('hei_nyers','avg_hei_nyers');bindAverage('len_szaraz','avg_len_szaraz');bindAverage('wid_szaraz','avg_wid_szaraz');bindAverage('hei_szaraz','avg_hei_szaraz');bindAverage('len_egetett','avg_len_egetett');bindAverage('wid_egetett','avg_wid_egetett');bindAverage('hei_egetett','avg_hei_egetett');setToday();attachGlobalListeners();renderBricks();buildExecutiveReport();
+    const stationKeys = [
+      {key:'nyers', label:'Nyers', className:'nyers', color:[43,110,243]},
+      {key:'szaraz', label:'Száraz', className:'szaraz', color:[123,135,148]},
+      {key:'egetett', label:'Égetett', className:'egetett', color:[245,158,11]}
+    ];
+    const sectionPhotos = { nyers: [], szaraz: [], egetett: [] };
+
+    function setToday(){
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,'0');
+      const day = String(d.getDate()).padStart(2,'0');
+      document.getElementById('reportDate').value = `${y}-${m}-${day}`;
+    }
+
+    function createInputs(containerId, count, label){
+      const container = document.getElementById(containerId);
+      let html = '';
+      for(let i=1;i<=count;i++){
+        html += `<div class="mini-card"><label>${label} #${i}</label><input type="text" inputmode="decimal" placeholder="mm"></div>`;
+      }
+      container.innerHTML = html;
+    }
+
+    function parseNum(v){
+      const n = parseFloat(String(v).replace(',', '.'));
+      return isNaN(n) ? null : n;
+    }
+
+    function valuesFrom(containerId){
+      return Array.from(document.querySelectorAll(`#${containerId} input`)).map(i => i.value.trim());
+    }
+
+    function averageFrom(containerId){
+      const nums = valuesFrom(containerId).map(parseNum).filter(v => v !== null);
+      return nums.length ? (nums.reduce((a,b)=>a+b,0)/nums.length).toFixed(2).replace('.',',') : '-';
+    }
+
+    function bindAverage(containerId, targetId){
+      document.querySelectorAll(`#${containerId} input`).forEach(inp => {
+        inp.addEventListener('input', () => {
+          document.getElementById(targetId).textContent = averageFrom(containerId);
+          buildExecutiveReport();
+        });
+      });
+    }
+
+    function escapeHtml(text){
+      return String(text).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#039;");
+    }
+
+    function openOnly(targetId){
+      document.querySelectorAll('details.panel').forEach(d => d.open = (d.id === targetId));
+      const target = document.getElementById(targetId);
+      if (target) target.scrollIntoView({behavior:'smooth', block:'start'});
+    }
+
+    function stationData(key){
+      return {
+        product: document.getElementById(`product_${key}`).value.trim() || '-',
+        note: document.getElementById(`note_${key}`).value.trim() || '-',
+        avgL: averageFrom(`len_${key}`),
+        avgW: averageFrom(`wid_${key}`),
+        avgH: averageFrom(`hei_${key}`),
+        photoCount: sectionPhotos[key].length
+      };
+    }
+
+    function getDefects(){
+      return Array.from(document.querySelectorAll('.brick-defect'))
+        .map(inp => ({brick: inp.dataset.brick, defect: inp.value.trim()}))
+        .filter(row => row.defect);
+    }
+
+    function collectReportData(){
+      return {
+        date: document.getElementById('reportDate').value || '-',
+        shift: document.getElementById('shiftCode').value.trim() || '-',
+        lot: document.getElementById('lotNumber').value.trim() || '-',
+        inspector: document.getElementById('inspectorName').value.trim() || '-',
+        rackShift: document.getElementById('rackShiftCode').value.trim() || '-',
+        general: document.getElementById('generalNote').value.trim() || '-',
+        brickCount: document.getElementById('brickCount').value.trim() || '-',
+        defects: getDefects(),
+        stations: stationKeys.map(st => ({
+          key: st.key,
+          label: st.label,
+          className: st.className,
+          color: st.color,
+          ...stationData(st.key),
+          photos: sectionPhotos[st.key]
+        }))
+      };
+    }
+
+    function updateQuickSummary(){
+      const data = collectReportData();
+      const txt = [
+        'NAPI MINTAELLENŐRZÉSI ÖSSZEFOGLALÓ','',
+        `Dátum: ${data.date}`,
+        `Műszak: ${data.shift}`,
+        `Tételszám: ${data.lot}`,
+        `Riport készítő: ${data.inspector}`,'',
+        ...data.stations.flatMap(st => [
+          `${st.label}`,
+          `  Termék: ${st.product}`,
+          `  Megjegyzés: ${st.note}`,
+          `  H: ${st.avgL} | Sz: ${st.avgW} | M: ${st.avgH}`,
+          `  Képek: ${st.photoCount} db`,''
+        ]),
+        'Rakat bontás',
+        `  Műszak: ${data.rackShift}`,
+        `  Darabszám: ${data.brickCount}`,
+        `  Hibás téglák: ${data.defects.length} db`
+      ].join('\n');
+      document.getElementById('quickSummary').textContent = txt;
+      return data;
+    }
+
+    function buildStationCard(st){
+      const photosHtml = st.photos.length
+        ? `<div class="station-photos">${st.photos.map(p => `<img src="${p.data}" alt="${st.label} kép">`).join('')}</div>`
+        : `<div class="empty" style="margin-top:12px">Ehhez az állomáshoz nincs csatolt kép.</div>`;
+      return `
+        <section class="station-card ${st.className}">
+          <div class="station-top">
+            <div class="station-name">${st.label} állomás</div>
+            <div class="count-badge">${st.photos.length} kép</div>
+          </div>
+          <div class="station-meta">
+            <div class="mini-kpi"><div class="k">Termék</div><div class="v">${escapeHtml(st.product)}</div></div>
+            <div class="mini-kpi"><div class="k">Hosszúság átlag</div><div class="v">${escapeHtml(st.avgL)}</div></div>
+            <div class="mini-kpi"><div class="k">Szélesség átlag</div><div class="v">${escapeHtml(st.avgW)}</div></div>
+            <div class="mini-kpi"><div class="k">Magasság átlag</div><div class="v">${escapeHtml(st.avgH)}</div></div>
+          </div>
+          <div class="note-box" style="margin-top:12px">
+            <div class="k">Állomás megjegyzés</div>
+            <div class="v" style="font-size:.94rem">${escapeHtml(st.note)}</div>
+          </div>
+          ${photosHtml}
+        </section>
+      `;
+    }
+
+    function buildExecutiveReport(){
+      const data = updateQuickSummary();
+      document.getElementById('execDate').textContent = data.date;
+      document.getElementById('execShift').textContent = data.shift;
+      document.getElementById('execLot').textContent = data.lot;
+      document.getElementById('execInspector').textContent = data.inspector;
+      document.getElementById('execNote').textContent = data.general;
+      document.getElementById('execDefectCount').textContent = `${data.defects.length} db`;
+      document.getElementById('execRackShift').textContent = data.rackShift;
+      document.getElementById('execBrickCount').textContent = data.brickCount;
+      document.getElementById('stationCards').innerHTML = data.stations.map(buildStationCard).join('');
+      document.getElementById('execDefectList').innerHTML = data.defects.length
+        ? `<ul>${data.defects.map(d => `<li><strong>${escapeHtml(d.brick)}. tégla:</strong> ${escapeHtml(d.defect)}</li>`).join('')}</ul>`
+        : 'Nincs rögzített hiba.';
+      return data;
+    }
+
+    function renderGallery(section){
+      const gallery = document.getElementById(`gallery_${section}`);
+      const photos = sectionPhotos[section];
+      gallery.innerHTML = photos.length
+        ? photos.map((p, idx) => `<div class="img-box"><img src="${p.data}" alt="${section} kép ${idx+1}"><button class="remove-img" type="button" onclick="removePhoto('${section}', ${idx})">×</button></div>`).join('')
+        : `<div class="empty">Ehhez a blokkhoz még nincs csatolt kép.</div>`;
+    }
+
+    function removePhoto(section, idx){
+      sectionPhotos[section].splice(idx, 1);
+      renderGallery(section);
+      buildExecutiveReport();
+    }
+
+    function handlePhotoInput(section, input){
+      const files = Array.from(input.files || []);
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = e => {
+          sectionPhotos[section].push({name:file.name, data:e.target.result});
+          renderGallery(section);
+          buildExecutiveReport();
+        };
+        reader.readAsDataURL(file);
+      });
+      input.value = '';
+    }
+
+    function renderBricks(){
+      const count = Math.min(500, Math.max(0, parseInt(document.getElementById('brickCount').value || '0', 10)));
+      const list = document.getElementById('brickList');
+      list.innerHTML = count
+        ? Array.from({length:count}, (_,i) => `<div class="brick"><div class="brick-head"><div class="brick-num">${i+1}. tégla</div><div class="count-badge">hiba mező</div></div><input type="text" class="brick-defect" data-brick="${i+1}" placeholder="pl. repedés, sarokhibás, törött"></div>`).join('')
+        : `<div class="empty">Adj meg darabszámot, majd hozd létre a téglákat.</div>`;
+      list.querySelectorAll('.brick-defect').forEach(inp => inp.addEventListener('input', buildExecutiveReport));
+      buildExecutiveReport();
+    }
+
+    async function generatePdf(){
+      const data = buildExecutiveReport();
+      const status = document.getElementById('pdfStatus');
+      status.textContent = 'PDF generálás folyamatban...';
+      try{
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({unit:'mm', format:'a4'});
+        const pageW = doc.internal.pageSize.getWidth();
+        const pageH = doc.internal.pageSize.getHeight();
+        const margin = 12;
+        const contentW = pageW - margin * 2;
+        let y = margin;
+
+        function ensureSpace(need){
+          if (y + need > pageH - margin){
+            doc.addPage();
+            y = margin;
+          }
+        }
+
+        function drawTextBlock(txt, x, yy, maxW, lineH=5){
+          const lines = doc.splitTextToSize(String(txt || '-'), maxW);
+          doc.text(lines, x, yy);
+          return yy + lines.length * lineH;
+        }
+
+        function drawBox(title, value, x, yy, w, h=18){
+          doc.setDrawColor(214,219,227);
+          doc.setFillColor(250,251,252);
+          doc.roundedRect(x, yy, w, h, 3, 3, 'FD');
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(8);
+          doc.setTextColor(102,112,133);
+          doc.text(title.toUpperCase(), x + 4, yy + 5);
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(11);
+          doc.setTextColor(23,32,51);
+          const lines = doc.splitTextToSize(String(value || '-'), w - 8);
+          doc.text(lines, x + 4, yy + 11);
+        }
+
+        function sectionHeader(title, color){
+          ensureSpace(12);
+          doc.setFillColor(color[0], color[1], color[2]);
+          doc.roundedRect(margin, y, 4, 10, 1, 1, 'F');
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(13);
+          doc.setTextColor(15,23,42);
+          doc.text(title, margin + 8, y + 7);
+          y += 12;
+        }
+
+        function addStation(st){
+          sectionHeader(st.label + ' állomás', st.color);
+          const colW = (contentW - 8) / 4;
+          ensureSpace(24);
+          drawBox('Termék', st.product, margin, y, colW);
+          drawBox('Hosszúság átlag', st.avgL, margin + colW + 2.5, y, colW);
+          drawBox('Szélesség átlag', st.avgW, margin + (colW + 2.5) * 2, y, colW);
+          drawBox('Magasság átlag', st.avgH, margin + (colW + 2.5) * 3, y, colW);
+          y += 22;
+
+          ensureSpace(20);
+          doc.setDrawColor(214,219,227);
+          doc.setFillColor(250,251,252);
+          doc.roundedRect(margin, y, contentW, 18, 3, 3, 'FD');
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(8);
+          doc.setTextColor(102,112,133);
+          doc.text('ÁLLOMÁS MEGJEGYZÉS', margin + 4, y + 5);
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(10);
+          doc.setTextColor(23,32,51);
+          const noteLines = doc.splitTextToSize(String(st.note || '-'), contentW - 8);
+          doc.text(noteLines, margin + 4, y + 11);
+          y += Math.max(20, noteLines.length * 5 + 10);
+
+          if (st.photos.length){
+            const imgW = (contentW - 8) / 3;
+            let col = 0;
+            for (let i = 0; i < st.photos.length; i++){
+              if (col === 0) ensureSpace(46);
+              const imgX = margin + (imgW + 4) * col;
+              const imgY = y;
+              const fmt = st.photos[i].data.startsWith('data:image/png') ? 'PNG' : 'JPEG';
+              doc.addImage(st.photos[i].data, fmt, imgX, imgY, imgW, 40);
+              col++;
+              if (col === 3 || i === st.photos.length - 1){
+                y += 44;
+                col = 0;
+              }
+            }
+          } else {
+            ensureSpace(10);
+            doc.setFont('helvetica', 'italic');
+            doc.setFontSize(9);
+            doc.setTextColor(102,112,133);
+            doc.text('Ehhez az állomáshoz nincs csatolt kép.', margin, y + 5);
+            y += 10;
+          }
+        }
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(18);
+        doc.setTextColor(15,23,42);
+        doc.text('Napi mintaellenőrzési riport', margin, y);
+        y += 6;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(102,112,133);
+        doc.text('Vezetői összefoglaló napi minőségellenőrzéshez', margin, y);
+        y += 8;
+
+        const kpiW = (contentW - 9) / 4;
+        drawBox('Dátum', data.date, margin, y, kpiW);
+        drawBox('Műszak', data.shift, margin + kpiW + 3, y, kpiW);
+        drawBox('Tételszám', data.lot, margin + (kpiW + 3) * 2, y, kpiW);
+        drawBox('Riport készítő', data.inspector, margin + (kpiW + 3) * 3, y, kpiW);
+        y += 24;
+
+        ensureSpace(22);
+        doc.setDrawColor(214,219,227);
+        doc.setFillColor(250,251,252);
+        doc.roundedRect(margin, y, contentW, 20, 3, 3, 'FD');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(8);
+        doc.setTextColor(102,112,133);
+        doc.text('ÁLTALÁNOS MEGJEGYZÉS', margin + 4, y + 5);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(23,32,51);
+        y = drawTextBlock(data.general, margin + 4, y + 11, contentW - 8);
+        y += 5;
+
+        data.stations.forEach(addStation);
+
+        sectionHeader('Rakat bontás – hibák összefoglalása', [17,24,39]);
+        const half = (contentW - 3) / 2;
+        drawBox('Rakat bontás műszak', data.rackShift, margin, y, half);
+        drawBox('Rakat darabszám', data.brickCount, margin + half + 3, y, half);
+        y += 24;
+
+        const defectHeight = Math.max(18, (data.defects.length || 1) * 6 + 10);
+        ensureSpace(defectHeight + 4);
+        doc.setDrawColor(214,219,227);
+        doc.setFillColor(250,251,252);
+        doc.roundedRect(margin, y, contentW, defectHeight, 3, 3, 'FD');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(8);
+        doc.setTextColor(102,112,133);
+        doc.text('HIBÁK LISTÁJA', margin + 4, y + 5);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(23,32,51);
+        if (data.defects.length){
+          let dy = y + 11;
+          data.defects.forEach(d => {
+            const lines = doc.splitTextToSize(`${d.brick}. tégla: ${d.defect}`, contentW - 8);
+            doc.text(lines, margin + 4, dy);
+            dy += lines.length * 5;
+          });
+        } else {
+          doc.text('Nincs rögzített hiba.', margin + 4, y + 11);
+        }
+
+        const safeDate = String(data.date || 'datum-nelkul').replaceAll('.', '-').replaceAll('/', '-');
+        doc.save(`napi-riport-${safeDate}.pdf`);
+        status.textContent = 'A PDF elkészült és letöltődött.';
+      } catch (err){
+        status.textContent = 'A PDF generálás nem sikerült.';
+      }
+    }
+
+    function attachGlobalListeners(){
+      document.querySelectorAll('details.panel').forEach(d => {
+        d.addEventListener('toggle', () => {
+          if(d.open){
+            document.querySelectorAll('details.panel').forEach(other => {
+              if(other !== d){ other.open = false; }
+            });
+          }
+        });
+      });
+
+      document.getElementById('sectionJump').addEventListener('change', e => openOnly(e.target.value));
+      document.getElementById('openAllBtn').addEventListener('click', () => {
+        document.querySelectorAll('details.panel').forEach(d => d.open = true);
+      });
+
+      document.querySelectorAll('input, textarea').forEach(el => {
+        if(!el.classList.contains('brick-defect')){
+          el.addEventListener('input', buildExecutiveReport);
+          el.addEventListener('change', buildExecutiveReport);
+        }
+      });
+
+      stationKeys.forEach(st => {
+        document.getElementById(`photo_${st.key}`).addEventListener('change', e => handlePhotoInput(st.key, e.target));
+        renderGallery(st.key);
+      });
+
+      document.getElementById('generateBricksBtn').addEventListener('click', renderBricks);
+      document.getElementById('buildReportBtn').addEventListener('click', buildExecutiveReport);
+      document.getElementById('generatePdfBtn').addEventListener('click', generatePdf);
+
+      document.querySelectorAll('.defect-chip').forEach(btn => {
+        btn.addEventListener('click', () => { document.getElementById('quickDefectText').value = btn.dataset.text; });
+      });
+
+      document.getElementById('brickList').addEventListener('dblclick', e => {
+        if(e.target.classList.contains('brick-defect')){
+          const txt = document.getElementById('quickDefectText').value.trim();
+          if(txt){ e.target.value = txt; buildExecutiveReport(); }
+        }
+      });
+    }
+
+    createInputs('len_nyers', 6, 'Hossz');
+    createInputs('wid_nyers', 6, 'Szél');
+    createInputs('hei_nyers', 7, 'Mag');
+    createInputs('len_szaraz', 6, 'Hossz');
+    createInputs('wid_szaraz', 6, 'Szél');
+    createInputs('hei_szaraz', 7, 'Mag');
+    createInputs('len_egetett', 6, 'Hossz');
+    createInputs('wid_egetett', 6, 'Szél');
+    createInputs('hei_egetett', 7, 'Mag');
+
+    bindAverage('len_nyers','avg_len_nyers');
+    bindAverage('wid_nyers','avg_wid_nyers');
+    bindAverage('hei_nyers','avg_hei_nyers');
+    bindAverage('len_szaraz','avg_len_szaraz');
+    bindAverage('wid_szaraz','avg_wid_szaraz');
+    bindAverage('hei_szaraz','avg_hei_szaraz');
+    bindAverage('len_egetett','avg_len_egetett');
+    bindAverage('wid_egetett','avg_wid_egetett');
+    bindAverage('hei_egetett','avg_hei_egetett');
+
+    setToday();
+    attachGlobalListeners();
+    renderBricks();
+    buildExecutiveReport();
   </script>
 </body>
 </html>
